@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model detailed_type {
+  Type_ID   String  @id @unique(map: "Type_ID") @db.VarChar(255)
+  Type_Desc String? @db.LongText
+  type      type    @relation(fields: [Type_ID], references: [Type_ID], onDelete: Cascade, map: "detailed_Type_ibfk_1")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model energy {
+  Type_ID         String @db.VarChar(255)
+  Energy_Consumed Float?
+  Average_EC      Float?
+
+  @@ignore
+}
+
+model kwh {
+  id    Int     @id @default(autoincrement())
+  jenis String? @db.VarChar(50)
+  kVA   BigInt?
+  users users[]
+}
+
+model lumens {
+  Type_ID String @id @unique(map: "Type_ID") @db.VarChar(255)
+  LW      Float?
+  type    type   @relation(fields: [Type_ID], references: [Type_ID], onDelete: Cascade, map: "Lumens_ibfk_1")
+}
+
+model main {
+  Object_Name          String  @id @db.VarChar(255)
+  Representative_Image String? @db.VarChar(512)
+  Recommended_ID       String? @db.VarChar(255)
+  Dampak_Produksi      String? @db.Text
+  Dampak_Konsumsi      String? @db.Text
+  Dampak_Disposal      String? @db.Text
+  avg_Energy           Float?
+  short_DP             String? @db.VarChar(255)
+  short_DK             String? @db.VarChar(255)
+  short_DD             String? @db.VarChar(255)
+  lokasi               String? @db.VarChar(255)
+  Sumber               String  @db.VarChar(256)
+  item                 item[]
+  type                 type[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model source {
+  Object_Name String @db.VarChar(255)
+  Link        String @db.Text
+
+  @@ignore
+}
+
+model type {
+  Object_Name   String         @db.VarChar(255)
+  Type_ID       String         @unique(map: "Type_ID") @db.VarChar(255)
+  detailed_type detailed_type?
+  lumens        lumens?
+  main          main           @relation(fields: [Object_Name], references: [Object_Name], onDelete: Cascade, map: "Type_ibfk_1")
+
+  @@index([Object_Name], map: "Object_Name")
+  @@index([Type_ID], map: "Type_ID_2")
+}
+
+model users {
+  id         Int     @id @default(autoincrement())
+  firebaseId String  @db.VarChar(50)
+  kwhId      Int?
+  name       String? @db.VarChar(100)
+  item       item[]
+  kwh        kwh?    @relation(fields: [kwhId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_users_kwh")
+
+  @@index([kwhId], map: "kwhId")
+}
+
+model item {
+  id         Int    @id @default(autoincrement())
+  userId     Int
+  objectName String @db.VarChar(50)
+  main       main   @relation(fields: [objectName], references: [Object_Name], onDelete: NoAction, onUpdate: NoAction, map: "FK__main")
+  users      users  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__users")
+
+  @@index([objectName], map: "FK__main")
+  @@index([userId], map: "FK__users")
+}

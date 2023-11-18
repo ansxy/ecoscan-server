@@ -1,0 +1,32 @@
+{
+  "name": "ecoscan-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "tsc && node dist/server.js",
+    "lint": "eslint . --ext .ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon - exec 'ts-node' src/server.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "-": "^0.0.1",
+    "@tensorflow/tfjs-node": "^4.11.0",
+    "@types/multer": "^1.4.8",
+    "express": "^4.18.2",
+    "multer": "1.4.5-lts.1",
+    "ndarray": "^1.0.19",
+    "nodemon": "^3.0.1",
+    "save-dev": "0.0.1-security",
+    "sharp": "^0.32.6",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@prisma/client": "^5.6.0",
+    "@types/express": "^4.17.19",
+    "prisma": "^5.6.0",
+    "typescript": "^5.2.2"
+  }
+}
