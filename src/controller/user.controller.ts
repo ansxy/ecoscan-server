@@ -77,30 +77,53 @@ export const checkIsUserExist = async (req: Request, res: Response) => {
 };
 
 export const userStatisctic = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  
   try {
-    const data = await database.item.findMany({
-      where: {
-        userId: parseInt(id),
-      },
-      include: {
-        main: {
-          select: {
-            avg_Energy: true,
+    const { id } = req.params;
+    if(id) {      
+      const data = await database.item.findMany({
+        where: {
+          userId: parseInt(id),
+        },
+        include: {
+          main: {
+            select: {
+              avg_Energy: true,
+            },
           },
         },
-      },
-    });
-
-    const totalAvgEnergy = data.reduce((total, item) => {
-      return total + (item.main ? item.main.avg_Energy : 0);
-    }, 0);
-
-    return res.status(200).json({
-      status: "success",
-      data: data,
-      AvgDaily: totalAvgEnergy,
-    });
+      });
+  
+      const totalAvgEnergy = data.reduce((total, item) => {
+        return total + (item.main ? item.main.avg_Energy : 0);
+      }, 0);
+  
+      return res.status(200).json({
+        status: "success",
+        data: data,
+        AvgDaily: totalAvgEnergy,
+      });
+    } else {
+      const data = await database.item.findMany({
+        include: {
+          main: {
+            select: {
+              avg_Energy: true,
+            },
+          },
+        },
+      });
+  
+      const totalAvgEnergy = data.reduce((total, item) => {
+        return total + (item.main ? item.main.avg_Energy : 0);
+      }, 0);
+  
+      return res.status(200).json({
+        status: "success",
+        data: data,
+        AvgDaily: totalAvgEnergy,
+      });
+    }
   } catch (error) {
     return res.status(500).json({
       status: "fail",
@@ -109,39 +132,10 @@ export const userStatisctic = async (req: Request, res: Response) => {
   }
 };
 
-export const AdminStatistic = async (req: Request, res: Response) => {
-  try {
-    const data = await database.item.findMany({
-      include: {
-        main: {
-          select: {
-            avg_Energy: true,
-          },
-        },
-      },
-    });
-
-    const totalAvgEnergy = data.reduce((total, item) => {
-      return total + (item.main ? item.main.avg_Energy : 0);
-    }, 0);
-
-    return res.status(200).json({
-      status: "success",
-      data: data,
-      AvgDaily: totalAvgEnergy,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      status: "fail",
-      error: error,
-    });
-  }
-};
 
 module.exports = {
   userPrefrence,
   saveItem,
   checkIsUserExist,
   userStatisctic,
-  AdminStatistic,
 };
