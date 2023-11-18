@@ -7,7 +7,7 @@
     "start": "tsc && node dist/server.js",
     "lint": "eslint . --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon - exec 'ts-node' src/server.ts"
+    "dev": "set NODE_ENV=development &&  nodemon - exec 'ts-node' src/server.ts"
   },
   "prisma": {
     "seed" : "ts-node prisma/seed.ts"
