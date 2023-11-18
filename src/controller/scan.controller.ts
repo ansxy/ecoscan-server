@@ -7,7 +7,7 @@ import { database } from "../utils/database";
 export const predict = async (req: Request, res: Response) => {
   try {
     const file = req.file;
-    const modelPath = "file:///project/ecoscan-server/src/model/model.json";
+    const modelPath =  "file:///root/ecoscan-server/src/model/model.json";
     const model = await tf.loadLayersModel(modelPath);
 
     if (!fs.existsSync(file.path)) {
@@ -67,6 +67,7 @@ export const predict = async (req: Request, res: Response) => {
 
     res.status(200).json({ status: "success", data: response });
   } catch (error) {
+    console.log(error)
     res.status(500).send(error);
   }
 };
