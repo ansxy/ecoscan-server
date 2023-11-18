@@ -83,11 +83,12 @@ model users {
 }
 
 model item {
-  id         Int    @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   userId     Int
-  objectName String @db.VarChar(50)
-  main       main   @relation(fields: [objectName], references: [Object_Name], onDelete: NoAction, onUpdate: NoAction, map: "FK__main")
-  users      users  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__users")
+  objectName String   @db.VarChar(50)
+  createdAt  DateTime @default(now()) @db.DateTime(0)
+  main       main     @relation(fields: [objectName], references: [Object_Name], onDelete: NoAction, onUpdate: NoAction, map: "FK__main")
+  users      users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__users")
 
   @@index([objectName], map: "FK__main")
   @@index([userId], map: "FK__users")
