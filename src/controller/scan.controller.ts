@@ -4,10 +4,26 @@ import fs from "fs";
 import sharp from "sharp";
 import { database } from "../utils/database";
 
+const getRecomendation = (predicted: string) => {
+  if (predicted === "Air Conditioner") {
+    return "R-38 AC";
+  }
+  if (predicted === "Oven") {
+    return "Less Than or Equal to 1 Cubic Ft Oven";
+  }
+  if (predicted === "Lamp") {
+    return "E17";
+  }
+  return predicted;
+};
+
 export const predict = async (req: Request, res: Response) => {
   try {
     const file = req.file;
-    const modelPath =  "file:///root/ecoscan-server/src/model/model.json";
+    const modelPath =
+      process.env.NODE_ENV === "production"
+        ? process.env.PATH_MODEL
+        : "file:///project/ecoscan-server/src/model/model.json";
     const model = await tf.loadLayersModel(modelPath);
 
     if (!fs.existsSync(file.path)) {
@@ -50,6 +66,10 @@ export const predict = async (req: Request, res: Response) => {
       },
     });
 
+    const currentTime = new Date();
+
+    const recomendation = getRecomendation(predictedClass);
+
     const response = {
       name: data.Object_Name,
       Image: data.Representative_Image,
@@ -63,11 +83,13 @@ export const predict = async (req: Request, res: Response) => {
       "Average Energy": data.avg_Energy,
       Sumber: data.Sumber,
       result: result,
+      time: currentTime.toString(),
+      recommendations: recomendation,
     };
 
     res.status(200).json({ status: "success", data: response });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).send(error);
   }
 };
